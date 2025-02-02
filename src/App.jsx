@@ -5,7 +5,8 @@ import "./App.css";
 import styled from "styled-components";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+  const [sendForm, setSendForm] = useState(false);
 
   return (
     <>
@@ -25,7 +26,7 @@ function App() {
           </p>
         </Instructions>
         <Envelope>
-          <EnTop className="flap">
+          <EnTop className={showForm ? "flap" : ""}>
             <svg
               viewBox="0 0 814 252"
               fill="none"
@@ -73,6 +74,22 @@ function App() {
               />
             </svg>
           </EnBottom>
+          <LoveLetter
+            className={showForm ? "form" : sendForm ? "formsent" : ""}
+          ></LoveLetter>
+          <ActionButton
+            onClick={() => {
+              if (!showForm) {
+                setShowForm(true);
+              } else if (!sendForm) {
+                setSendForm(true);
+                setShowForm(false);
+                console.log("send");
+              }
+            }}
+          >
+            {showForm ? "Send" : "Start"}
+          </ActionButton>
         </Envelope>
       </Container>
     </>
@@ -80,6 +97,28 @@ function App() {
 }
 
 export default App;
+
+const ActionButton = styled.button`
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  bottom: 1em;
+  z-index: 500;
+`;
+
+const LoveLetter = styled.div`
+  width: 80%;
+  height: 400px;
+  position: absolute;
+  background-color: green;
+  background: linear-gradient(to bottom, #f9f7f7, #f9f7f7, #f5c3c6);
+  left: 50%;
+  bottom: 40%;
+  transform: translate(-50%, -1000%);
+  transition: transform 2s ease-in-out, height 1s ease-in-out, z-index 2s ease-in-out;
+  border-radius: 10px;
+  z-index: 80;
+`;
 
 const EnRight = styled.div`
   position: absolute;
@@ -92,6 +131,7 @@ const EnRight = styled.div`
     width: 105%;
     height: 100%;
   }
+  z-index: 100;
 `;
 
 const EnLeft = styled.div`
@@ -105,6 +145,7 @@ const EnLeft = styled.div`
     width: 105%;
     height: 100%;
   }
+  z-index: 100;
 `;
 
 const EnTop = styled.div`
@@ -118,8 +159,9 @@ const EnTop = styled.div`
     width: 100%;
     height: min-content;
   }
-  transition: transform 0.5s ease-in-out;
-  transform-origin: top
+  transition: transform 2s ease-in-out, z-index 2.25s ease-in-out;
+  transform-origin: top;
+
 `;
 
 const EnBottom = styled.div`
@@ -143,14 +185,23 @@ const Envelope = styled.div`
   -webkit-box-shadow: 0px 0px 53px -9px rgba(209, 95, 95, 1);
   -moz-box-shadow: 0px 0px 53px -9px rgba(209, 95, 95, 1);
   box-shadow: 0px 0px 53px -9px rgba(209, 95, 95, 1);
+  background: linear-gradient(to bottom, #ffced4, #d88a8f);
+
   /* overflow: hidden; */
 
-   .flap {
+  .flap {
     transform: rotateX(210deg);
+    z-index: 0 !important;
   }
 
-   .form{
-    
+  .form {
+    transform: translate(-50%, 0%);
+  }
+
+  .formsent {
+    transform: translate(-50%, 50%);
+    height: 200px;
+    z-index: 0;
   }
 `;
 
@@ -167,7 +218,7 @@ const Instructions = styled.div`
 `;
 
 const Container = styled.div`
-  background-color: #FFCED4;
+  background-color: #ffced4;
   width: 100vw;
   height: 100vh;
   display: flex;
