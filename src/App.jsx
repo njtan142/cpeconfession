@@ -52,12 +52,11 @@ function App() {
     const code = urlParams.get("code");
     console.log(code);
     const timeLeft = timeUntilValentines();
-    if(code){
+    if (code) {
       alert("This confession will be viewable on February 14th. " + timeLeft);
       window.location.href = "/";
     }
-   
-  }
+  };
 
   useEffect(() => {
     checkIfHasCodeParam();
@@ -74,7 +73,7 @@ function App() {
 
     console.log(message);
 
-    if (hasUndefinedValues(message, [ "to", "message", "code"])) {
+    if (hasUndefinedValues(message, ["to", "message", "code"])) {
       alert("Please fill in all fields");
       return;
     }
@@ -121,6 +120,9 @@ function App() {
         <Envelope>
           <EnTop className={showForm ? "flap" : ""}>
             <svg
+              width="100%"
+              height="auto"
+              preserveAspectRatio="xMidYMid meet"
               viewBox="0 0 814 252"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -157,6 +159,9 @@ function App() {
           </EnRight>
           <EnBottom>
             <svg
+              width="100%"
+              height="auto"
+              preserveAspectRatio="xMidYMid meet"
               viewBox="0 0 814 252"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -221,14 +226,20 @@ function App() {
           <p>
             <em>
               If you're a little daring, send this link to that special someone:
-              <a href={`/?code=${code}`}> Open ({window.location.href.split('?')[0]}{`?code=${code}`})</a>
+              <a href={`/?code=${code}`}>
+                {" "}
+                Open ({window.location.href.split("?")[0]}
+                {`?code=${code}`})
+              </a>
             </em>
           </p>
         </div>
       </SentModal>
 
       <Footer>
-        <p>Made in collaboration with ICPEP.SE CTU’s Creatives and Technical team</p>
+        <p>
+          Made in collaboration with ICPEP.SE CTU’s Creatives and Technical team
+        </p>
         <b>Niño, Krishia, Mikae, Gabriel</b>
       </Footer>
     </>
@@ -242,12 +253,11 @@ const Footer = styled.div`
   bottom: 0;
   left: 0;
   padding: 10px;
-  p{
+  p {
     margin: 0;
   }
 
   font-size: 8px;
-
 `;
 
 const SentModal = styled.div`
@@ -285,20 +295,22 @@ const SentModal = styled.div`
     }
 
     display: flex;
+    min-width: 0;
+    min-height: 0;
     flex-direction: column;
     justify-content: space-between;
   }
 
   /* Extra Small Devices (phones, up to 576px) */
   @media (max-width: 576px) {
-    .content{
+    .content {
       width: 70%;
     }
   }
 
   /* Small Devices (landscape phones, 576px and up) */
   @media (min-width: 576px) {
-    .content{
+    .content {
       width: 70%;
     }
   }
@@ -314,13 +326,14 @@ const SentModal = styled.div`
 
 const From = styled.div`
   display: flex;
+  min-width: 0;
+  min-height: 0;
   justify-content: flex-end;
   gap: 1em;
   align-items: center;
   input {
     padding: 5px 10px;
     width: 50%;
-
   }
 
   /* Extra Small Devices (phones, up to 576px) */
@@ -342,6 +355,8 @@ const From = styled.div`
 
 const Message = styled.div`
   display: flex;
+  min-width: 0;
+  min-height: 0;
   flex-direction: column;
   textarea {
     align-self: center;
@@ -374,6 +389,8 @@ const Message = styled.div`
 
 const To = styled.div`
   display: flex;
+  min-width: 0;
+  min-height: 0;
   gap: 1em;
   align-items: center;
 
@@ -519,12 +536,11 @@ const EnLeft = styled.div`
 const EnTop = styled.div`
   position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 200;
   svg {
     transform: rotate(180deg);
-    width: 100%;
-    height: min-content;
   }
   transition: transform 2s ease-in-out, z-index 2.25s ease-in-out;
   transform-origin: top;
@@ -549,13 +565,9 @@ const EnTop = styled.div`
 const EnBottom = styled.div`
   position: absolute;
   bottom: -7px;
-  height: min-content;
+  left: 0;
   width: 100%;
   z-index: 200;
-  svg {
-    width: 100%;
-    height: min-content;
-  }
 
   /* Extra Small Devices (phones, up to 576px) */
   @media (max-width: 576px) {
@@ -610,43 +622,41 @@ const Envelope = styled.div`
 
     .form {
       transform: translate(-50%, 15%);
-      width: 90%;
+      width: 85%;
     }
 
     .formsent {
-    transform: translate(-50%, 50%);
-    height: 100px;
-    z-index: 0;
-    overflow-y: hidden;
-  }
+      transform: translate(-50%, 50%);
+      height: 100px;
+      z-index: 0;
+      overflow-y: hidden;
+    }
   }
 
   /* Small Devices (landscape phones, 576px and up) */
   @media (min-width: 576px) {
     width: 70%;
-
   }
 
   /* Medium Devices (tablets, 768px and up) */
   @media (min-width: 768px) {
     width: 60%;
-
   }
 
   /* Large Devices (laptops/desktops, 992px and up) */
   @media (min-width: 992px) {
     width: 40%;
-
   }
 
   @media (min-width: 1400px) {
     width: 30%;
-
   }
 `;
 
 const Instructions = styled.div`
   display: flex;
+  min-width: 0;
+  min-height: 0;
   width: 50%;
   text-align: center;
   flex-direction: column;
@@ -664,7 +674,6 @@ const Instructions = styled.div`
   /* Small Devices (landscape phones, 576px and up) */
   @media (min-width: 576px) {
     width: 90%;
-    
   }
 
   /* Medium Devices (tablets, 768px and up) */
@@ -674,15 +683,16 @@ const Instructions = styled.div`
   /* Large Devices (laptops/desktops, 992px and up) */
   @media (min-width: 992px) {
     width: 50%;
-  
   }
 `;
 
 const Container = styled.div`
   background-color: #ffced4;
-  width: 100vw;
-  height: 100vh;
+  width: 100svw;
+  height: 100svh;
   display: flex;
+  min-width: 0;
+  min-height: 0;
   justify-content: center;
   align-items: center;
   flex-direction: column;
