@@ -30,3 +30,22 @@
   body {
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  input {
+    background-color: white;
+    color: black;
+  }
+  textarea {
+    background-color: white;
+    color: black;
+  }
+
+  button {
+    background-color: white;
+    color: black;
+  }
+  body {
+    color: black;
+  }
+}
