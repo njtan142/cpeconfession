@@ -518,8 +518,7 @@ const EnLeft = styled.div`
 
 const EnTop = styled.div`
   position: absolute;
-  top: -0px;
-  height: min-content;
+  top: 0;
   width: 100%;
   z-index: 200;
   svg {
@@ -577,7 +576,7 @@ const EnBottom = styled.div`
 
 const Envelope = styled.div`
   width: 40%;
-  aspect-ratio: calc(1122 / 670);
+  aspect-ratio: 1.67;
   background-color: transparent;
   border-radius: 20px;
   position: relative;
