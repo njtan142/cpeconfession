@@ -1,12 +1,105 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import styled from "styled-components";
+import { firestore } from "./firebase";
+import { collection, doc, getDoc, setDoc } from "@firebase/firestore";
+
+function randomString(length) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+function hasUndefinedValues(obj, keys) {
+  return keys.some((key) => obj[key] === undefined || obj[key] === "");
+}
+
+function timeUntilValentines() {
+  const now = new Date();
+  const year = now.getFullYear();
+  let valentines = new Date(year, 1, 14); // February 14 (Month index starts at 0)
+
+  // If Valentine's Day has already passed, set it for next year
+  if (now > valentines) {
+    valentines.setFullYear(year + 1);
+  }
+
+  const timeDiff = valentines - now;
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+
+  return `${days} days, ${hours} hours, ${minutes} mins left`;
+}
 
 function App() {
   const [showForm, setShowForm] = useState(false);
   const [sendForm, setSendForm] = useState(false);
+  const [fromInput, setFromInput] = useState("");
+  const [toInput, setToInput] = useState("");
+  const [messageInput, setMessageInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [showSentModal, setShowSentModal] = useState(false);
+  const [code, setCode] = useState("");
+
+  const checkIfHasCodeParam = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    console.log(code);
+    const timeLeft = timeUntilValentines();
+    if(code){
+      alert("This confession will be viewable on February 14th. " + timeLeft);
+      window.location.href = "/";
+    }
+   
+  }
+
+  useEffect(() => {
+    checkIfHasCodeParam();
+  }, []);
+
+  const sendMessage = async (redo = false) => {
+    const code = randomString(6);
+    const message = {
+      from: fromInput,
+      to: toInput,
+      message: messageInput,
+      code: code,
+    };
+
+    console.log(message);
+
+    if (hasUndefinedValues(message, ["from", "to", "message", "code"])) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (!redo) {
+      setSendForm(true);
+      setShowForm(false);
+      setSending(true);
+    }
+
+    const ref = doc(collection(firestore, "messages"), code);
+
+    const messageRef = await getDoc(ref);
+    console.log(messageRef);
+
+    if (messageRef.exists()) {
+      console.log("This code has already been used");
+      sendMessage(true);
+      return;
+    }
+
+    await setDoc(ref, message);
+    setCode(code);
+    setShowSentModal(true);
+  };
 
   return (
     <>
@@ -76,27 +169,214 @@ function App() {
           </EnBottom>
           <LoveLetter
             className={showForm ? "form" : sendForm ? "formsent" : ""}
-          ></LoveLetter>
+          >
+            <To>
+              <p>To:</p>{" "}
+              <input
+                type="text"
+                value={toInput}
+                onChange={(e) => setToInput(e.target.value)}
+              />
+            </To>
+            <Message>
+              {" "}
+              <p>Message: </p>{" "}
+              <textarea
+                name="message"
+                rows={"7"}
+                placeholder="Write your message here"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+              ></textarea>
+            </Message>
+            <From>
+              <p>From:</p>{" "}
+              <input
+                type="text"
+                placeholder="anonymous"
+                value={fromInput}
+                onChange={(e) => setFromInput(e.target.value)}
+              />
+            </From>
+          </LoveLetter>
           <ActionButton
             onClick={() => {
               if (!showForm) {
                 setShowForm(true);
               } else if (!sendForm) {
-                setSendForm(true);
-                setShowForm(false);
-                console.log("send");
+                sendMessage();
               }
             }}
           >
-            {showForm ? "Send" : "Start"}
+            {sending ? "Sending..." : showForm ? "Send" : "Start"}
           </ActionButton>
         </Envelope>
       </Container>
+      <SentModal hidden={!showSentModal}>
+        <div className="content">
+          <div>
+            <h2>Your confession has been sent!</h2>
+            <p>We'll post all the confessions on February 14th.</p>
+          </div>
+          <p>
+            <em>
+              If you're a little daring, send this link to that special someone:
+              <a href={`/?code=${code}`}> Open</a>
+            </em>
+          </p>
+        </div>
+      </SentModal>
     </>
   );
 }
 
 export default App;
+
+const SentModal = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+
+  .content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f7ecec;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 500px;
+    height: 250px;
+    z-index: 500;
+    padding: 1em;
+
+    h2 {
+      margin-top: 0;
+    }
+
+    p {
+      margin-left: 1em;
+    }
+
+    em {
+      font-weight: 500;
+    }
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    .content{
+      width: 70%;
+    }
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    .content{
+      width: 70%;
+    }
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
+`;
+
+const From = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1em;
+  align-items: center;
+  input {
+    padding: 5px 10px;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
+`;
+
+const Message = styled.div`
+  display: flex;
+  flex-direction: column;
+  textarea {
+    align-self: center;
+    width: 70%;
+  }
+  p {
+    margin: 0;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    textarea {
+      align-self: center;
+      width: 90%;
+    }
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
+`;
+
+const To = styled.div`
+  display: flex;
+  gap: 1em;
+  align-items: center;
+
+  input {
+    padding: 5px 10px;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
+`;
 
 const ActionButton = styled.button`
   position: absolute;
@@ -104,6 +384,22 @@ const ActionButton = styled.button`
   transform: translate(-50%, 0%);
   bottom: 1em;
   z-index: 500;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;
 
 const LoveLetter = styled.div`
@@ -115,9 +411,28 @@ const LoveLetter = styled.div`
   left: 50%;
   bottom: 40%;
   transform: translate(-50%, -1000%);
-  transition: transform 2s ease-in-out, height 1s ease-in-out, z-index 2s ease-in-out;
+  transition: transform 2s ease-in-out, height 1s ease-in-out,
+    z-index 2s ease-in-out;
   border-radius: 10px;
   z-index: 80;
+  padding: 1em;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    width: 90%;
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;
 
 const EnRight = styled.div`
@@ -132,6 +447,22 @@ const EnRight = styled.div`
     height: 100%;
   }
   z-index: 100;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;
 
 const EnLeft = styled.div`
@@ -146,6 +477,22 @@ const EnLeft = styled.div`
     height: 100%;
   }
   z-index: 100;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;
 
 const EnTop = styled.div`
@@ -162,6 +509,21 @@ const EnTop = styled.div`
   transition: transform 2s ease-in-out, z-index 2.25s ease-in-out;
   transform-origin: top;
 
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;
 
 const EnBottom = styled.div`
@@ -173,6 +535,22 @@ const EnBottom = styled.div`
   svg {
     width: 100%;
     height: min-content;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
   }
 `;
 
@@ -195,13 +573,49 @@ const Envelope = styled.div`
   }
 
   .form {
-    transform: translate(-50%, 0%);
+    transform: translate(-50%, -10%);
   }
 
   .formsent {
     transform: translate(-50%, 50%);
-    height: 200px;
+    height: 150px;
     z-index: 0;
+    overflow-y: hidden;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    width: 80%;
+
+    .form {
+      transform: translate(-50%, 15%);
+      width: 90%;
+    }
+
+    .formsent {
+    transform: translate(-50%, 50%);
+    height: 100px;
+    z-index: 0;
+    overflow-y: hidden;
+  }
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    width: 70%;
+
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+    width: 60%;
+
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+    width: 40%;
+
   }
 `;
 
@@ -215,6 +629,27 @@ const Instructions = styled.div`
     margin: 0;
   }
   color: black;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    width: 90%;
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    width: 90%;
+    
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+    width: 50%;
+  
+  }
 `;
 
 const Container = styled.div`
@@ -226,4 +661,20 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 3em;
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
 `;

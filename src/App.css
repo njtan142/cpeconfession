@@ -2,6 +2,31 @@
   margin: 0 auto;
 }
 
-*{
+* {
   box-sizing: border-box;
+}
+
+/* Extra Small Devices (phones, up to 576px) */
+@media (max-width: 576px) {
+  body {
+    font-size: 12px;
+  }
+}
+
+/* Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  body {
+  }
+}
+
+/* Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  body {
+  }
+}
+
+/* Large Devices (laptops/desktops, 992px and up) */
+@media (min-width: 992px) {
+  body {
+  }
 }
