@@ -567,6 +567,7 @@ const Envelope = styled.div`
   -moz-box-shadow: 0px 0px 53px -9px rgba(209, 95, 95, 1);
   box-shadow: 0px 0px 53px -9px rgba(209, 95, 95, 1);
   background: linear-gradient(to bottom, #ffced4, #d88a8f);
+  max-width: 600px;
 
   /* overflow: hidden; */
 
