@@ -620,6 +620,11 @@ const Envelope = styled.div`
     width: 40%;
 
   }
+
+  @media (min-width: 1400px) {
+    width: 30%;
+
+  }
 `;
 
 const Instructions = styled.div`
