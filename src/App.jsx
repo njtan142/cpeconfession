@@ -226,11 +226,29 @@ function App() {
           </p>
         </div>
       </SentModal>
+
+      <Footer>
+        <p>Made in collaboration with ICPEP.SE CTU’s Creatives and Technical team</p>
+        <b>Niño, Krishia, Mikae, Gabriel</b>
+      </Footer>
     </>
   );
 }
 
 export default App;
+
+const Footer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+  p{
+    margin: 0;
+  }
+
+  font-size: 8px;
+
+`;
 
 const SentModal = styled.div`
   position: absolute;
