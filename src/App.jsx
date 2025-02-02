@@ -221,7 +221,7 @@ function App() {
           <p>
             <em>
               If you're a little daring, send this link to that special someone:
-              <a href={`/?code=${code}`}> Open ({window.location.href}{`?code=${code}`})</a>
+              <a href={`/?code=${code}`}> Open ({window.location.href.split('?')[0]}{`?code=${code}`})</a>
             </em>
           </p>
         </div>
