@@ -74,7 +74,7 @@ function App() {
 
     console.log(message);
 
-    if (hasUndefinedValues(message, ["from", "to", "message", "code"])) {
+    if (hasUndefinedValues(message, [ "to", "message", "code"])) {
       alert("Please fill in all fields");
       return;
     }
@@ -115,7 +115,7 @@ function App() {
           </p>
           <p>
             Let your feelings shine this <b>Valentine's Day</b> and spread the
-            love! 💕 or or
+            love! 💕
           </p>
         </Instructions>
         <Envelope>
