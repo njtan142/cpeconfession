@@ -301,6 +301,8 @@ const From = styled.div`
   align-items: center;
   input {
     padding: 5px 10px;
+    width: 50%;
+
   }
 
   /* Extra Small Devices (phones, up to 576px) */
@@ -359,6 +361,7 @@ const To = styled.div`
 
   input {
     padding: 5px 10px;
+    width: 50%;
   }
 
   /* Extra Small Devices (phones, up to 576px) */
