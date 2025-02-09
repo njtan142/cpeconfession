@@ -12,8 +12,8 @@
   "dependencies": {
     "@firebase/app": "^0.10.18",
     "@firebase/firestore": "^4.7.6",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "styled-components": "^6.1.14"
   },
   "devDependencies": {
@@ -21,8 +21,10 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
