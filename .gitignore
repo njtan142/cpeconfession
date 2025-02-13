@@ -23,5 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
-
+# Configurations
 .env
+backend\adminsdk.json
+
+#export
+docs
+*.csv
+docs/
+docs/*

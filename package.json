@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "export": "node backend/export.js"
   },
   "dependencies": {
     "@firebase/app": "^0.10.18",
@@ -22,11 +23,13 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
+    "csv-writer": "^1.6.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
+    "firebase-admin": "^13.1.0",
     "globals": "^15.14.0",
     "vite": "^6.0.5"
   }
