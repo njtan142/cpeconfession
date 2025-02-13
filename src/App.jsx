@@ -24,6 +24,13 @@ function timeUntilValentines() {
   const year = now.getFullYear();
   let valentines = new Date(year, 1, 14); // February 14 (Month index starts at 0)
 
+  if (
+    now.getDate() === valentines.getDate() &&
+    now.getMonth() === valentines.getMonth()
+  ) {
+    return "";
+  }
+
   // If Valentine's Day has already passed, set it for next year
   if (now > valentines) {
     valentines.setFullYear(year + 1);
@@ -46,6 +53,10 @@ function App() {
   const [sending, setSending] = useState(false);
   const [showSentModal, setShowSentModal] = useState(false);
   const [code, setCode] = useState("");
+  const [showConfessionModal, setShowConfessionModal] = useState(false);
+  const [sender, setSender] = useState("");
+  const [confessionMessage, setConfessionMessage] = useState("");
+  const [recepient, setRecepient] = useState("");
 
   const checkIfHasCodeParam = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -53,6 +64,15 @@ function App() {
     console.log(code);
     const timeLeft = timeUntilValentines();
     if (code) {
+      if (timeLeft == "") {
+        setShowConfessionModal(true);
+        getMessage(code).then((message) => {
+          setSender(message.from);
+          setConfessionMessage(message.message);
+          setRecepient(message.to);
+        });
+        return;
+      }
       alert("This confession will be viewable on February 14th. " + timeLeft);
       window.location.href = "/";
     }
@@ -61,6 +81,13 @@ function App() {
   useEffect(() => {
     checkIfHasCodeParam();
   }, []);
+
+  const getMessage = async (code) => {
+    const ref = doc(collection(firestore, "messages"), code);
+    const messageRef = await getDoc(ref);
+    console.log(messageRef);
+    return messageRef.data();
+  };
 
   const sendMessage = async (redo = false) => {
     const code = randomString(6);
@@ -235,6 +262,16 @@ function App() {
           </p>
         </div>
       </SentModal>
+      <ConfessionModal hidden={!showConfessionModal}>
+        <div className="content">
+          <div>
+            <h3>From: {sender}</h3>
+            <p>{confessionMessage}</p>
+          </div>
+          <h3>To: {recepient}</h3>
+          <a href="/">Go back</a>
+        </div>
+      </ConfessionModal>
 
       <Footer>
         <p>
@@ -279,6 +316,72 @@ const SentModal = styled.div`
     width: 50%;
     max-width: 500px;
     height: 250px;
+    z-index: 500;
+    padding: 1em;
+
+    h2 {
+      margin-top: 0;
+    }
+
+    p {
+      margin-left: 1em;
+    }
+
+    em {
+      font-weight: 500;
+    }
+
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Extra Small Devices (phones, up to 576px) */
+  @media (max-width: 576px) {
+    .content {
+      width: 70%;
+    }
+  }
+
+  /* Small Devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    .content {
+      width: 70%;
+    }
+  }
+
+  /* Medium Devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+  }
+
+  /* Large Devices (laptops/desktops, 992px and up) */
+  @media (min-width: 992px) {
+  }
+`;
+
+const ConfessionModal = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+
+  .content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f7ecec;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 500px;
+    min-height: 250px;
+    max-height: 600px;
+    overflow-y: scroll;
     z-index: 500;
     padding: 1em;
 
